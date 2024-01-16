@@ -9,8 +9,8 @@ import time
 class BackFromSettings(Exception):
     pass
 
-def settings_mode(
-    contact_file_path, history_file_path, failed_recipients_path, the_settings_path):
+def settings_mode(contact_file_path, history_file_path, failed_recipients_path, the_settings_path):
+    """this is the main settings mode file"""
     filepath = the_settings_path
     settings = load_settings(filepath)
     while True:
@@ -96,9 +96,7 @@ def is_auto_mode_on(setting_filepath: str) -> bool:
         return False
 
 
-def check_and_reset_if_new_year(
-    setting_filepath: str, all_contacts_filepath: str
-) -> None:
+def check_and_reset_if_new_year(setting_filepath: str, all_contacts_filepath: str) -> None:
     settings = load_settings(setting_filepath)
     if is_new_year(settings["last_reset_date"]):
         try:

@@ -38,6 +38,7 @@ def is_valid_email(address: str) -> bool:
 
 
 def is_birthday_today(person: list[dict]) -> bool:
+    """checks if bday is today"""
     birthday = person[0]["birthday"]
     # Birthday string to a datetime object
     birthday_date = datetime.strptime(birthday, "%Y.%m.%d").date()
