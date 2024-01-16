@@ -8,6 +8,7 @@ from data_manager import (
     delete_contact,
 )
 from validators import is_valid_birthday, is_valid_email
+import re
 
 
 class BackFromEdit(Exception):
@@ -203,9 +204,12 @@ def edit_birthday(contact_to_edit: list[dict]) -> None:
         birthday := input("New birthday(yyyy/mm/dd): ").strip()
     ) or not is_valid_birthday(birthday):
         print("Enter a valid birthday")
-    edit_contact(contact_to_edit, "birthday", birthday)
-    print("\nSuccess!")
 
+    y, m, d = re.split(r"[-./]", birthday)
+    formatted_birthday = f"{y}.{m.zfill(2)}.{d.zfill(2)}"
+
+    edit_contact(contact_to_edit, "birthday", formatted_birthday)
+    print("\nSuccess!")
 
 def edit_email(
     contact_to_edit: list[dict], failed_senders_path: str = "optional_parameter.csv"

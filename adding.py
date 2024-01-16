@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import re
 import time
 from validators import is_valid_birthday, is_valid_email
 from data_manager import (
@@ -42,7 +43,13 @@ class Person:
                 "congratulated": self.congratulated,
             }
         ]
-
+    
+    @classmethod
+    def format_birthday(cls, birthday) -> str:
+        y, m, d = re.split(r"[-./]", birthday)
+        formatted_birthday = f"{y}.{m.zfill(2)}.{d.zfill(2)}"
+        return formatted_birthday
+    
     @classmethod
     def get_data(cls, listdict) -> object:
         while not (name := input("Full name: ").strip()):
@@ -70,6 +77,8 @@ class Person:
             birthday := input("Birthday(yyyy/mm/dd): ").strip()
         ) or not is_valid_birthday(birthday):
             print("Enter a valid birthday")
+
+        birthday = cls.format_birthday(birthday)
 
         while not (email := input("Email: ").strip()) or not is_valid_email(email):
             print("Enter a valid email")
@@ -118,6 +127,8 @@ class Person:
     def birthday(self, birthday: str) -> None:
         if not is_valid_birthday(birthday) or not birthday:
             raise ValueError("Invalid Birthday")
+        birthday = Person.format_birthday(birthday)
+    
         self._birthday = birthday
 
     @email.setter

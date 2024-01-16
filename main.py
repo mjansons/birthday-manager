@@ -1,5 +1,5 @@
 """This is the main menu"""
-from data_manager import create_csv, read_csv, add_days_until_birthday, turning_years, get_todays_celebrators, make_list_printable, print_person
+from data_manager import wipe_file, create_csv, read_csv, add_days_until_birthday, turning_years, get_todays_celebrators, make_list_printable, print_person
 from settings import settings_mode, create_settings_file, check_and_reset_if_new_year, BackFromSettings, is_auto_mode_on
 from congratulation_manager import congratulation_mode, BackFromCongratulations
 from adding import add_contact, BackFromAdding
@@ -96,9 +96,9 @@ def wipe_all_files(history_filepath: str, failed_senders_filepath: str, contacts
         print("Enter only '1', '2'")
    
     if answer == "1":
-        create_csv(history_filepath)
-        create_csv(failed_senders_filepath)
-        create_csv(contacts)
+        wipe_file(history_filepath)
+        wipe_file(failed_senders_filepath)
+        wipe_file(contacts)
         print("All data from all files has been deleted.")
 
     else:
@@ -111,6 +111,7 @@ def display_history(history_filepath: str) -> None:
     except ValueError:
         print("No emails have been sent yet!")
     else:
+        print("\nHISTORY:\n")
         if people:
             for person in people:
                 person["message"] = person["message"].replace("(new-line)", "\n")

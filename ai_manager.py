@@ -105,15 +105,3 @@ if __name__ == "__main__":
     bot = MessageMaker(contact, global_history)
     answer = bot.get_prompt()
     print(answer)
-
-
-
-
-
-# ChatCompletion(id='chatcmpl-8LsbTcj49kGSFvGanYjFr1OMxrIiF',
-#                choices=[Choice(finish_reason='stop', index=0, message=ChatCompletionMessage(content='This is a test.', role='assistant', function_call=None, tool_calls=None))],
-#                created=1700225475,
-#                model='gpt-3.5-turbo-0613',
-#                object='chat.completion',
-#                system_fingerprint=None,
-#                usage=CompletionUsage(completion_tokens=5, prompt_tokens=12, total_tokens=17))
