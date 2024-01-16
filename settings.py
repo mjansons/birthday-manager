@@ -1,3 +1,4 @@
+"""this is the main settings mode file and from here auto mode can be launched in a seperate thread"""
 from datetime import datetime
 from data_manager import read_csv, rewrite_csv, edit_contact
 from auto_mode import auto_congratulation_mode
@@ -10,33 +11,28 @@ class BackFromSettings(Exception):
     pass
 
 def settings_mode(contact_file_path, history_file_path, failed_recipients_path, the_settings_path):
-    """this is the main settings mode file"""
     filepath = the_settings_path
     settings = load_settings(filepath)
     while True:
-        print(
-            f"\nCurrent Settings:\n\nAuto mode ON: {settings['auto_mode_on']}\nAPI is working: {settings['api_is_working']}\nLast Reset Date: {settings['last_reset_date']}"
-        )
-        answer = input(
-            "\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\nOption: "
-        ).strip()
+        # Read settings to get the latest status
+        settings = load_settings(filepath)
+        time.sleep(1.5)
+        print(f"\nCurrent Settings:\n\nAuto mode ON: {settings['auto_mode_on']}\nAPI is working: {settings['api_is_working']}\nLast Reset Date: {settings['last_reset_date']}")
+        answer = input("\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\nOption: ").strip()
         if answer == "1":
             switch_auto_mode(settings)
             update_last_reset_date(settings)
             save_settings(filepath, settings)
-            print("\nSuccess!")
 
             # start auto mode if it was off in the settings and now is turned on
             if is_auto_mode_on(filepath):
-                auto_thread = threading.Thread(
-                    target=auto_congratulation_mode,
-                    args=(contact_file_path, history_file_path, failed_recipients_path, the_settings_path)
-                )
+                auto_thread = threading.Thread(target=auto_congratulation_mode,args=(contact_file_path, history_file_path, failed_recipients_path, the_settings_path))
                 auto_thread.daemon = True
                 auto_thread.start()
                 time.sleep(1.33)
             
         elif answer == "2":
+            print("\nAll changes have been saved!")
             raise BackFromSettings
         else:
             print("Enter only '1' or '2'")
@@ -69,11 +65,21 @@ def save_settings(filepath: str, settings: dict) -> None:
 
 
 def switch_auto_mode(settings: dict) -> None:
-    settings["auto_mode_on"] = not settings["auto_mode_on"]
+    if settings["auto_mode_on"] == "False":
+        settings["auto_mode_on"] = True
+    elif settings["auto_mode_on"] == "True":
+        settings["auto_mode_on"] = False
+    return settings
 
 
-def switch_api_working(settings: dict) -> None:
-    settings["api_is_working"] = not settings["api_is_working"]
+def switch_api_working(settings: dict) -> dict:
+    if settings["api_is_working"] == "False":
+        settings["api_is_working"] = True
+    elif settings["api_is_working"] == "True":
+        settings["api_is_working"] = False
+    return settings
+    
+
 
 
 def update_last_reset_date(settings: dict) -> None:

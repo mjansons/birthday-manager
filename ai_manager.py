@@ -1,6 +1,7 @@
+"""this file manages openai api calls"""
 from dotenv import load_dotenv
 import os
-from openai import OpenAI, AuthenticationError, RateLimitError
+from openai import OpenAI, AuthenticationError, RateLimitError, APIConnectionError
 from dataclasses import dataclass, field
 from data_manager import read_csv, turning_years
 load_dotenv()
@@ -65,10 +66,13 @@ class MessageMaker():
             self.chat_history.append({"role": "assistant", "content": api_message})
             return api_message
         except AuthenticationError:
-            print("Authentication Error: Please check your OpenAI API key.")
+            print("\nAuthentication Error: Please check your OpenAI API key.")
             raise WriteManual
         except RateLimitError:
-            print("Rate Limit Error: You've exceeded your token usage limit.")
+            print("\nRate Limit Error: You've exceeded your token usage limit.")
+            raise WriteManual
+        except APIConnectionError:
+            print("\nOpenAI API request failed to connect.")
             raise WriteManual
     
 
@@ -80,9 +84,14 @@ class MessageMaker():
             self.chat_history.append({"role": "assistant", "content": api_message})
             return api_message
         except AuthenticationError:
-            raise WriteManual("Authentication Error: Please check your OpenAI API key.")
+            print("\nAuthentication Error: Please check your OpenAI API key.")
+            raise WriteManual
         except RateLimitError:
-            raise WriteManual("Rate Limit Error: You've exceeded your token usage limit.")
+            print("\nRate Limit Error: You've exceeded your token usage limit.")
+            raise WriteManual
+        except APIConnectionError:
+            print("\nOpenAI API request failed to connect.")
+            raise WriteManual
             
 
 if __name__ == "__main__":

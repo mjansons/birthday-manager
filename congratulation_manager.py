@@ -1,14 +1,16 @@
+"""this file manages congratulation sending"""
 from data_manager import create_csv, append_csv, read_csv, get_todays_celebrators, make_list_printable, print_person, edit_specific_contact, rewrite_csv, delete_contact, append_history_csv
 from edit_contacts import ask_which_contact_to_manipulate
 from ai_manager import MessageMaker
 from email_manager import send_mail
 from ai_manager import WriteManual
 from email_manager import WrongEmail
+from settings import load_settings, switch_api_working, save_settings
 
 class BackFromCongratulations(Exception):
     pass
 
-def congratulation_mode(contact_file_path, history_file_path, failed_senders):
+def congratulation_mode(contact_file_path, history_file_path, failed_senders, settings_filepath):
     create_csv(history_file_path)
     try:
         contacts = read_csv(contact_file_path)
@@ -49,6 +51,12 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders):
                 print("Entering manual mode...")
                 subject, message = write_myself(contact_to_congratulate)
                 break
+
+            # update settings in case API wasn't working before
+            settings = load_settings(settings_filepath)
+            if settings["api_is_working"] == "False":
+                switch_api_working(settings)
+            save_settings(settings_filepath, settings)
 
             # preview
             print("\nThis is how your email will look:")
@@ -180,4 +188,4 @@ def decide_how_to_write_message() -> str:
     return answer
 
 if __name__ == "__main__":
-    congratulation_mode("contacts.csv", "history.csv", "failed_recipients.csv")
+    congratulation_mode("contacts.csv", "history.csv", "failed_recipients.csv", "settings.txt")

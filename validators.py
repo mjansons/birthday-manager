@@ -4,7 +4,6 @@ from validator_collection import validators, errors
 from datetime import datetime
 import re
 
-
 def is_valid_birthday(bday: str) -> bool:
     """returns True if YYYY-MM-DD or YYYY.MM.DD or YYYY/MM/DD, else False"""
     if not bday:

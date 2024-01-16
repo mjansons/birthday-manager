@@ -1,3 +1,4 @@
+"""this file manages view/ edit/ delete contacts mode"""
 from data_manager import (
     read_csv,
     rewrite_csv,

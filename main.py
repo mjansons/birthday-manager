@@ -6,7 +6,10 @@ from adding import add_contact, BackFromAdding
 from edit_contacts import view_or_edit, BackFromEdit
 from auto_mode import auto_congratulation_mode
 import sys
+import time
 import threading
+
+print("\n\nHELLO!\n")
 
 def user_mode(settings_file: str, contacts_file: str, history_file: str, failed_recipients_file: str) -> None:
     while True:
@@ -28,6 +31,7 @@ def user_mode(settings_file: str, contacts_file: str, history_file: str, failed_
         try:
             contacts = read_csv(contacts_file)
             todays_celebrators = get_todays_celebrators(contacts, True)
+            time.sleep(1.5)
             display_birthdays_today(todays_celebrators)
             print()
             display_upcoming_birthdays(contacts)
@@ -53,7 +57,7 @@ def user_mode(settings_file: str, contacts_file: str, history_file: str, failed_
 
             # congratulate
             if answer == "1":
-                congratulation_mode(contacts_file, history_file, failed_recipients_file)
+                congratulation_mode(contacts_file, history_file, failed_recipients_file, settings_file)
             # add contacts
             elif answer == "2":
                 add_contact(contacts_file)
@@ -80,14 +84,13 @@ def user_mode(settings_file: str, contacts_file: str, history_file: str, failed_
             continue
         
 
-
 def wipe_all_files(history_filepath: str, failed_senders_filepath: str, contacts: list[dict]):
     while (
         not (
             answer := input(
                 "Are you sure?:\n\n"
                 "1. Yes\n"
-                "2. No\n"
+                "2. No\n\n"
                 "Option: "
             ).strip()
         )
@@ -99,7 +102,7 @@ def wipe_all_files(history_filepath: str, failed_senders_filepath: str, contacts
         wipe_file(history_filepath)
         wipe_file(failed_senders_filepath)
         wipe_file(contacts)
-        print("All data from all files has been deleted.")
+        print("\nAll data from all files has been deleted!")
 
     else:
         pass
@@ -111,7 +114,7 @@ def display_history(history_filepath: str) -> None:
     except ValueError:
         print("No emails have been sent yet!")
     else:
-        print("\nHISTORY:\n")
+        print("\nHistory:")
         if people:
             for person in people:
                 person["message"] = person["message"].replace("(new-line)", "\n")
@@ -128,7 +131,10 @@ def display_failed_senders(failed_senders_filepath: str) -> None:
         print("No failed senders yet!")
     else:
         printable = make_list_printable(people)
-        print_person(printable)
+        if not printable:
+            print("\nNo failed senders yet!")
+        else:
+            print_person(printable)
 
     
 def display_birthdays_today(todays_celebrators: list[dict]) -> None:
@@ -149,8 +155,9 @@ def display_upcoming_birthdays(contacts: list[dict]) -> None:
         upcoming_list = [person for person in people if person.get('days_until_birthday', 0) != 0][:3]
         printable_upcoming_list = "\n".join(
             f"{person.get('name', 'Somebody')} will be turning {turning_years([person])} years old in {person["days_until_birthday"]} day(s)." for person in upcoming_list)
-        print("UPCOMING:")
-        print(printable_upcoming_list,"\n")
+        if upcoming_list:
+            print("UPCOMING:")
+            print(printable_upcoming_list,"\n")
 
 
 if __name__ == "__main__":

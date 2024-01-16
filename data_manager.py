@@ -1,4 +1,4 @@
-"""All file manipulation functions are here"""
+"""All file manipulation functions are here, searches and formatting for printing"""
 import os
 import csv
 import re
@@ -117,9 +117,7 @@ def edit_contact(contacts: list[dict], key: str, new_value: str) -> list[dict]:
     return contacts
 
 
-def edit_specific_contact(
-    full_list: list[dict], my_contact: list[dict], key: str, new_value: str
-) -> list[dict]:
+def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: str, new_value: str) -> list[dict]:
     """update key for a selected contact in the list"""
     for person in full_list:
         if person["uid"] == my_contact[0]["uid"]:
@@ -127,9 +125,7 @@ def edit_specific_contact(
     return full_list
 
 
-def delete_contact(
-    all_contacts: list[dict], removable_contact_list: list[dict]
-) -> list[dict]:
+def delete_contact(all_contacts: list[dict], removable_contact_list: list[dict]) -> list[dict]:
     removable_contacts_uids = [contact["uid"] for contact in removable_contact_list]
     return [d for d in all_contacts if d["uid"] not in removable_contacts_uids]
 
@@ -180,7 +176,6 @@ def turning_years(person: list[dict]) -> int:
 
 
 def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dict]:
-    """return today's celebrators"""
     # include everyone
     if congr == True:
         todays_celebrators = [
@@ -197,11 +192,4 @@ def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dic
 
 
 if __name__ == "__main__":
-    list_of_dicts = [
-        {"name": "John", "age": 30, "city": "New York"},
-        {"name": "Alice", "age": 25, "city": "San Francisco"},
-        {"name": "Bob", "age": 35, "city": "Los Angeles"},
-    ]
-
-    edit_contact(list_of_dicts, "name", "Peter")
-    print(list_of_dicts)
+    ...

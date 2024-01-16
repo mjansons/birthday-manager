@@ -1,3 +1,4 @@
+"""this file manages the email sending part"""
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,9 +13,7 @@ class WrongEmail(Exception):
     pass
 
 
-def send_mail(
-    contact: list[dict], message: str, subject: str = "Happy Birthday!"
-) -> None:
+def send_mail(contact: list[dict], message: str, subject: str = "Happy Birthday!") -> None:
     email_sender = os.environ.get("MY_EMAIL")
     email_password = os.environ.get("MY_EMAIL_PASS")
     email_receiver = contact[0]["email"]
