@@ -17,6 +17,8 @@ import time
 
 
 def auto_congratulation_mode(contact_file_path, history_file_path, failed_recipients_path, settings_file_path):
+    """This does the same thing as congratulation manager, except it skips user inputs/ verifications"""
+    # Loading here to Avoid Circular Dependency on settings file
     from settings import (
     is_auto_mode_on,
     check_and_reset_if_new_year,
@@ -78,8 +80,8 @@ def auto_congratulation_mode(contact_file_path, history_file_path, failed_recipi
                     todays_celebrators = delete_contact(
                         todays_celebrators, [contact_to_congratulate]
                     )
-
-        time.sleep(1000)
+        # no need to re-check for anyone's birthay constantly
+        time.sleep(60)
 
 
 if __name__ == "__main__":

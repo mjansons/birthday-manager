@@ -1,3 +1,4 @@
+"""This file contains code to add new contacts"""
 from dataclasses import dataclass
 import re
 import time
@@ -59,7 +60,6 @@ class Person:
         if duplicates := get_duplicates(listdict, "name", name):
             formatted_list = make_list_printable(duplicates)
             print_person(formatted_list)
-
             print(
                 "\nThe above contact(s), with the entered name already exist(s), would you like to add another one?\n\n1. Yes\n2. No\n"
             )
@@ -73,16 +73,18 @@ class Person:
                     print("Invalid option selected")
                     continue
 
+        # get birthday
         while not (
             birthday := input("Birthday(yyyy/mm/dd): ").strip()
         ) or not is_valid_birthday(birthday):
             print("Enter a valid birthday")
-
         birthday = cls.format_birthday(birthday)
 
+        # get email
         while not (email := input("Email: ").strip()) or not is_valid_email(email):
             print("Enter a valid email")
-
+            
+        # get about
         about = input("About: ").strip()
 
         return cls(name=name, birthday=birthday, email=email, about=about)
