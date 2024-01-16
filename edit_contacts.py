@@ -10,7 +10,7 @@ from data_manager import (
 from validators import is_valid_birthday, is_valid_email
 
 
-class BackToMain(Exception):
+class BackFromEdit(Exception):
     pass
 
 
@@ -18,41 +18,47 @@ class SearchAgain(Exception):
     pass
 
 
-def view_or_edit(filepath: str) -> None:
+def view_or_edit(filepath: str, failed_sender_path: str) -> None:
     """This is the main loop for this mode"""
 
-    while (
-        not (
-            answer := input(
-                "What do you want to do?\n\n"
-                "1. View All Contacts\n"
-                "2. Edit/Delete a Contact\n"
-                "3. Return to Main Menu\n\n"
-                "Option: "
-            ).strip()
-        )
-        or answer not in ["1", "2", "3"]
-    ):
+    while not (
+        answer := input(
+            "What do you want to do?\n\n"
+            "1. View All Contacts\n"
+            "2. Edit/Delete a Contact\n"
+            "3. Return to Main Menu\n\n"
+            "Option: "
+        ).strip()
+    ) or answer not in ["1", "2", "3"]:
         print("Enter only '1', '2', or '3'")
 
     # print all contacts
     if answer == "1":
-        contacts = read_csv(filepath)
-        printable_contacts = make_list_printable(contacts)
-        print_person(printable_contacts)
-        print("Look up!\n")
-        raise BackToMain
+        try:
+            contacts = read_csv(filepath)
+        except ValueError:
+            print("You don't have any contacts!\n")
+        else:
+            printable_contacts = make_list_printable(contacts)
+            print_person(printable_contacts)
+            print("Look up!\n")
+        raise BackFromEdit
 
     # run edit mode
     elif answer == "2":
-        contacts = read_csv(filepath)
-        run_edit_mode(filepath, contacts)
+        try:
+            contacts = read_csv(filepath)
+        except ValueError:
+            print("You don't have any contacts!\n")
+        else:
+            run_edit_mode(filepath, contacts, failed_sender_path)
+        raise BackFromEdit
 
     else:
-        raise BackToMain
+        raise BackFromEdit
 
 
-def run_edit_mode(filepath: str, contacts: list[dict]) -> None:
+def run_edit_mode(filepath: str, contacts: list[dict], failed_sender_path: str) -> None:
     """This is the main function that offers user to edit a single contact"""
     while True:
         try:
@@ -97,7 +103,7 @@ def run_edit_mode(filepath: str, contacts: list[dict]) -> None:
                         continue
                     # if edit email
                     elif response == "3":
-                        edit_email(contact_to_edit)
+                        edit_email(contact_to_edit, failed_sender_path)
                         continue
                     # if edit about
                     elif response == "4":
@@ -128,7 +134,7 @@ def run_edit_mode(filepath: str, contacts: list[dict]) -> None:
                     if response == "1":
                         raise SearchAgain
                     elif response == "2":
-                        raise BackToMain
+                        raise BackFromEdit
                     else:
                         print("Invalid option")
                         continue
@@ -161,7 +167,7 @@ def offer_to_continue_to_edit() -> None:
             print()
             raise SearchAgain
         elif response == "3":
-            raise BackToMain
+            raise BackFromEdit
         else:
             print("Invalid option")
             continue
@@ -201,10 +207,25 @@ def edit_birthday(contact_to_edit: list[dict]) -> None:
     print("\nSuccess!")
 
 
-def edit_email(contact_to_edit: list[dict]) -> None:
+def edit_email(
+    contact_to_edit: list[dict], failed_senders_path: str = "optional_parameter.csv"
+) -> None:
     while not (email := input("New email: ").strip()) or not is_valid_email(email):
         print("Enter a valid email")
     edit_contact(contact_to_edit, "email", email)
+
+    # logic in case the user was in failed sender list before
+    try:
+        failed_list = read_csv(failed_senders_path)
+        for contact in failed_list:
+            if contact["uid"] == contact_to_edit[0]["uid"]:
+                edit_contact(contact_to_edit, "congratulated", "False")
+                delete_contact(failed_list, contact_to_edit)
+                rewrite_csv(failed_senders_path, failed_list)
+    except ValueError:
+        pass
+
+        # need to remove him now from failed sender list if he's there
     print("\nSuccess!")
 
 
@@ -225,7 +246,7 @@ def delete_person(
         contacts = delete_contact(contacts, contact_to_edit)
         rewrite_csv(filepath, contacts)
         print("\nSuccess!")
-        raise BackToMain
+        raise BackFromEdit
 
 
 def finish(filepath: str, contacts: list[dict], contact_to_edit: list[dict]) -> None:
@@ -234,8 +255,8 @@ def finish(filepath: str, contacts: list[dict], contact_to_edit: list[dict]) -> 
     edited_contact = make_list_printable(contact_to_edit)
     print_person(edited_contact)
     print("All changes have been saved!\n")
-    raise BackToMain
+    raise BackFromEdit
 
 
 if __name__ == "__main__":
-    view_or_edit("contacts.csv")
+    view_or_edit("contacts.csv", "failed_recipients.csv")

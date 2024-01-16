@@ -10,7 +10,7 @@ from data_manager import (
 )
 
 
-class BackToMain(Exception):
+class BackFromAdding(Exception):
     pass
 
 
@@ -61,7 +61,7 @@ class Person:
                 if option == "1":
                     break
                 elif option == "2":
-                    raise BackToMain
+                    raise BackFromAdding
                 else:
                     print("Invalid option selected")
                     continue
@@ -140,7 +140,10 @@ class Person:
 
 def add_contact(filepath):
     while True:
-        listdict = read_csv(filepath)
+        try:
+            listdict = read_csv(filepath)
+        except ValueError:
+            listdict = []
         contact = Person.get_data(listdict)
         append_csv(filepath, contact.key_value_pairs())
         print("\nSuccess!\n")
@@ -150,7 +153,7 @@ def add_contact(filepath):
             if response == "1":
                 break
             elif response == "2":
-                raise BackToMain
+                raise BackFromAdding
             else:
                 print("Invalid option")
                 continue

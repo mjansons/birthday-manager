@@ -1,17 +1,20 @@
-from data_manager import create_csv, read_csv, get_todays_celebrators, make_list_printable, print_person, edit_specific_contact, rewrite_csv, delete_contact, append_history_csv
+from data_manager import create_csv, append_csv, read_csv, get_todays_celebrators, make_list_printable, print_person, edit_specific_contact, rewrite_csv, delete_contact, append_history_csv
 from edit_contacts import ask_which_contact_to_manipulate
 from ai_manager import MessageMaker
 from email_manager import send_mail
+from ai_manager import WriteManual
+from email_manager import WrongEmail
 
-class BackToMain(Exception):
+class BackFromCongratulations(Exception):
     pass
 
-def main(contact_file_path, history_file_path):
-    # need to remember to only offer this feature if there is anyone to be congratulated!!!!!!!!
-    # this check should probably happen in the main file
-
+def congratulation_mode(contact_file_path, history_file_path, failed_senders):
     create_csv(history_file_path)
-    contacts = read_csv(contact_file_path)
+    try:
+        contacts = read_csv(contact_file_path)
+    except ValueError:
+        contacts = []
+
     todays_celebrators = get_todays_celebrators(contacts, False)
     
     while len(todays_celebrators) > 0:
@@ -34,9 +37,18 @@ def main(contact_file_path, history_file_path):
         # AI
         if answer == "1":
             # generate congratulation message
-            global_history = read_csv(history_file_path)
+            try:
+                global_history = read_csv(history_file_path)
+            except ValueError:
+                global_history = []
             bot = MessageMaker(contact_to_congratulate, global_history)
-            message = bot.get_prompt()
+            try:
+                message = bot.get_prompt()
+            except WriteManual as e:
+                print(e)
+                print("Entering manual mode...")
+                subject, message = write_myself(contact_to_congratulate)
+                break
 
             # preview
             print("\nThis is how your email will look:")
@@ -70,18 +82,29 @@ def main(contact_file_path, history_file_path):
                     break
 
                 elif answer == "4":
-                    raise BackToMain
+                    raise BackFromCongratulations
     
         # custom    
         elif answer == "2":
             subject, message = write_myself(contact_to_congratulate)
+        try:
+            send_mail(contact_to_congratulate, message, subject)
+            print("\nSuccess!\n")
+        except WrongEmail as e:
+            print(e)
+            append_csv(failed_senders, contact_to_congratulate)
+            edit_specific_contact(contacts, contact_to_congratulate, "congratulated", "True")
+            rewrite_csv(contact_file_path, contacts)
+            todays_celebrators = delete_contact(todays_celebrators, contact_to_congratulate)
+        
+        else:
+            append_history_csv(history_file_path, contact_to_congratulate, subject, message)
+            edit_specific_contact(contacts, contact_to_congratulate, "congratulated", "True")
+            rewrite_csv(contact_file_path, contacts)
+            todays_celebrators = delete_contact(todays_celebrators, contact_to_congratulate)
 
-        send_mail(contact_to_congratulate, message, subject)
-        append_history_csv(history_file_path, contact_to_congratulate, subject, message)
-        edit_specific_contact(contacts, contact_to_congratulate, "congratulated", "True")
-        rewrite_csv(contact_file_path, contacts)
-        todays_celebrators = delete_contact(todays_celebrators, contact_to_congratulate)
-
+    print("Nobody needs to be congratulated, come back another day!")
+    raise BackFromCongratulations
 
 def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
     while True:
@@ -111,7 +134,7 @@ def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
             continue
         # Exit
         if answer == "3":
-            raise BackToMain
+            raise BackFromCongratulations
 
     return subject, message
 
@@ -156,67 +179,5 @@ def decide_how_to_write_message() -> str:
         print("Enter only '1' or '2'")
     return answer
 
-
-
-        # if ai then promt ai while 
-            # generate message
-            # add to temporary history # this is done in the class
-            # then ask for confirmation, 
-                # if yes
-                    # edit temporary history
-                    # send it
-                    # update history
-                    # update contacts with congratulated == "True"
-                    # restart
-                # if no 
-                    # ask ai to regenerate
-                # if exit
-                    # return to main
-
-        # if custom, then just ask to type it while answer is no
-            # then ask for confirmation, 
-                # if yes
-                    # send it
-                    # update history
-                    # update contacts with congratulated == "True"
-                    # restart
-                # if no 
-                    # can retype
-                # If Exit 
-                    # return to main
-        
-
-
-
-
-
-# I had an idea to make congratulator a class?
-    # what would it store then?
-    # what would be it's methods?
-    # why?
-
-# in case I want a different method for congratulating?
-        # maybe I can just get by with dependency injections with functions?
-# then need to select one
-
-# then need a method for doing it
-
-
-
 if __name__ == "__main__":
-    main("contacts.csv", "history.csv")
-
-
-
-
-
-
-
-
-# people = [
-#     {"uid": "1704663936754301","name": "Gints","birthday": "1993.05.12", "email": "gints@gmail.com", "about": "smth", "congratulated": "False"},
-#     {"uid": "1703432132435901","name": "Juris","birthday": "1992.03.12", "email": "bd@gmail.com", "about": "smth", "congratulated": "False"},
-#     {"uid": "1704663243212301","name": "Andris","birthday": "1993.08.03", "email": "ar@gmail.com", "about": "smth", "congratulated": "False"}
-#     ]
-
-# person = [{"uid": "1704663936754301","name": "Gints","birthday": "1993.05.12", "email": "gints@gmail.com", "about": "smth", "congratulated": "False"},]
+    congratulation_mode("contacts.csv", "history.csv", "failed_recipients.csv")

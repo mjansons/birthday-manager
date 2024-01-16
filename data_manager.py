@@ -37,24 +37,26 @@ def rewrite_csv(filepath: str, data: list[dict]) -> None:
 
 
 def append_csv(filepath: str, data: list[dict]) -> None:
-    file_is_empty = False
-    if os.path.exists(filepath):
-        file_is_empty = open(filepath).readline() == ""
+    file_is_empty = not os.path.exists(filepath) or open(filepath).readline() == ""
 
     with open(filepath, "a", newline="\n") as file:
         writer = csv.DictWriter(file, fieldnames=data[0].keys())
-        if file_is_empty or not os.path.exists(filepath):
+        if file_is_empty:
             writer.writeheader()
         writer.writerows(data)
 
 
-def append_history_csv(filepath: str, data: list[dict], subject: str, message: str) -> None:
+def append_history_csv(
+    filepath: str, data: list[dict], subject: str, message: str
+) -> None:
     the_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     message = message.replace("\n", "(new-line)")
 
     with open(filepath, "a", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=["uid", "name", "email", "date_sent", "subject", "message"])
+        writer = csv.DictWriter(
+            file, fieldnames=["uid", "name", "email", "date_sent", "subject", "message"]
+        )
         # only create headers if the file is empty.
         if os.path.getsize(filepath) == 0:
             writer.writeheader()
@@ -77,7 +79,9 @@ def get_duplicates(listdict: list[dict], key: str, value: str) -> list[str]:
     return duplicates
 
 
-def search_by_keyword(listdict: list[dict], search_keys: list[str], keyword: str) -> list[str]:
+def search_by_keyword(
+    listdict: list[dict], search_keys: list[str], keyword: str
+) -> list[str]:
     """search contacts using many dict keys with regex"""
 
     escaped_keyword = re.escape(keyword)
@@ -113,7 +117,9 @@ def edit_contact(contacts: list[dict], key: str, new_value: str) -> list[dict]:
     return contacts
 
 
-def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: str, new_value: str) -> list[dict]:
+def edit_specific_contact(
+    full_list: list[dict], my_contact: list[dict], key: str, new_value: str
+) -> list[dict]:
     """update key for a selected contact in the list"""
     for person in full_list:
         if person["uid"] == my_contact[0]["uid"]:
@@ -121,7 +127,9 @@ def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: st
     return full_list
 
 
-def delete_contact(all_contacts: list[dict], removable_contact_list: list[dict]) -> list[dict]:
+def delete_contact(
+    all_contacts: list[dict], removable_contact_list: list[dict]
+) -> list[dict]:
     removable_contacts_uids = [contact["uid"] for contact in removable_contact_list]
     return [d for d in all_contacts if d["uid"] not in removable_contacts_uids]
 

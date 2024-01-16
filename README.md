@@ -74,9 +74,12 @@ need to remember to catch all the errors for failed API call and failed e-mail s
 need to come back to format the long ass f strings in all pages
 need to remeber to create logic for making a history file
 need to remember to change every year status congratulated to False
+
+
 How to make sure not to break auto mode when someone's email is not valid? (can't receive e-mails)
-what if my e-mail is invalid?
+what if my e-mail is invalid? Auto mode should work only as long as API works a
 
 
 had to update my certificates for mac:
 /Applications/Python\ 3.12/Install\ Certificates.command
+
