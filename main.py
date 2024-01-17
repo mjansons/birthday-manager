@@ -55,28 +55,20 @@ def user_mode(settings_file: str, contacts_file: str, history_file: str, failed_
             ):
                 print("Enter only '1', '2', '3', '4', '5', '6', '7', or '8'")
 
-            # congratulate
             if answer == "1":
                 congratulation_mode(contacts_file, history_file, failed_recipients_file, settings_file)
-            # add contacts
             elif answer == "2":
                 add_contact(contacts_file)
-            # View/ Edit/ Remove Contacts(s)
             elif answer == "3":
                 view_or_edit(contacts_file, failed_recipients_file)
-            # view history
             elif answer == "4":
                 display_history(history_file)
-            # view failed senders
             elif answer == "5":
                 display_failed_senders(failed_recipients_file)
-            # settings
             elif answer == "6":
                 settings_mode(contacts_file, history_file, failed_recipients_file, settings_file)
-            # wipe everything
             elif answer == "7":
                 wipe_all_files(history_file, failed_recipients_file, contacts_file)
-            # exit
             elif answer == "8":
                 sys.exit("Adios!")
 
@@ -154,7 +146,7 @@ def display_upcoming_birthdays(contacts: list[dict]) -> None:
         add_days_until_birthday(people)
         upcoming_list = [person for person in people if person.get('days_until_birthday', 0) != 0][:3]
         printable_upcoming_list = "\n".join(
-            f"{person.get('name', 'Somebody')} will be turning {turning_years([person])} years old in {person["days_until_birthday"]} day(s)." for person in upcoming_list)
+            f"{person.get('name', 'Somebody')} will be turning {turning_years([person])} years old in {person['days_until_birthday']} day(s)." for person in upcoming_list)
         if upcoming_list:
             print("UPCOMING:")
             print(printable_upcoming_list,"\n")

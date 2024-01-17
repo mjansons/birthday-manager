@@ -34,6 +34,11 @@ def rewrite_csv(filepath: str, data: list[dict]) -> None:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(data)
+    if not data:
+        with open(filepath, "w", newline="") as file:
+            writer = csv.DictWriter(file)
+            writer.writerows(data)
+
 
 
 def append_csv(filepath: str, data: list[dict]) -> None:
@@ -97,7 +102,7 @@ def search_by_keyword(
 
 
 def make_list_printable(the_list) -> list:
-    format_person = lambda p: f"{'\n'.join([f'{k}: {v}' for k, v in p.items()])}"
+    format_person = lambda p: '\n'.join([f'{k}: {v}' for k, v in p.items()])
     strings = [format_person(person) for person in the_list]
     return strings
 
@@ -169,7 +174,7 @@ def turning_years(person: list[dict]) -> int:
 
     if (today_date.month, today_date.day) < (birthday_date.month, birthday_date.day):
         # Birthday is yet to come this year
-        return today_date.year - birthday_date.year
+        return today_date.year - birthday_date.year + 1
     else:
         # Birthday has already occurred this year
         return today_date.year - birthday_date.year + 1

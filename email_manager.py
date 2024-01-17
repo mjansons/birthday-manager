@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-from email.message import EmailMessage  # email sending library
-import ssl  # secure sockets layer protection
-import smtplib  # Simple Mail Transfer Protocol - this one does the actual sending
+from email.message import EmailMessage
+import ssl
+import smtplib
 
 
 class WrongEmail(Exception):

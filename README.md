@@ -12,29 +12,16 @@ This Python project helps you manage and automate birthday congratulations for y
 ### Prerequisites
 
 Make sure you have Python 3 installed on your machine. I use 3.12.
+Sorry if there are 
 
 ### Installing
 
 1. Install the required dependencies:
 
-   for the whole dependency list generate a requirement's txt by typing this in bash:
-
-```bash
- pip freeze > requirements.txt
 ```
 
-it will generate a requirements.txt file
-
-to install everything from it:
-
-```bash
- pip install -r requirements.txt
-```
-
-If this doesn't work, I believe you only need:
 openai==1.7.2
 python-dotenv==1.0.0
-requests==2.31.0
 validator-collection==1.5.0
 
 ## Usage
@@ -47,7 +34,7 @@ MY_EMAIL_PASS=Your_Gmail_App_Password
 OPENAI_API_KEY=The Api key from https://platform.openai.com/api-keys
 
 p.s.
-make sure you can actually send stuff from your gmail with this 2 step verification, more info: https://www.youtube.com/watch?v=g_j6ILT-X0k)
+make sure you can actually send stuff from your gmail with this 2 step verification, more info: https://www.youtube.com/watch?v=g_j6ILT-X0k
 
 p.p.s
 if you don't have tokens in your open AI api key, contact Turing college, they can sort you out, at least that's what Giedrius said.

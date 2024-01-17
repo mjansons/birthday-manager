@@ -58,6 +58,7 @@ def load_settings(filepath: str) -> dict:
     settings = {line.split("=")[0]: line.split("=")[1].strip() for line in lines if "=" in line}
     return settings
 
+
 def save_settings(filepath: str, settings: dict) -> None:
     with open(filepath, "w") as file:
         for key, value in settings.items():
@@ -79,8 +80,6 @@ def switch_api_working(settings: dict) -> dict:
         settings["api_is_working"] = False
     return settings
     
-
-
 
 def update_last_reset_date(settings: dict) -> None:
     today = datetime.now().date()
