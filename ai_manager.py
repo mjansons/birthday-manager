@@ -95,22 +95,4 @@ class MessageMaker():
             
 
 if __name__ == "__main__":
-    contact = [    
-        {
-            'uid': '170466393555551',
-            'name': 'Peteris',
-            'birthday': '1954.11.11',
-            'email': 'peteris@gmail.com',
-            'about': 'smth',
-            'congratulated': "True"
-        }
-    ]
-
-    try:
-        global_history = read_csv("history.csv")
-    except ValueError:
-        global_history = []
-
-    bot = MessageMaker(contact, global_history)
-    answer = bot.get_prompt()
-    print(answer)
+    ...
