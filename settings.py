@@ -24,7 +24,7 @@ def settings_mode(
             f"\nCurrent Settings:\n\nAuto mode ON: {settings['auto_mode_on']}\nAPI is working: {settings['api_is_working']}\nLast Reset Date: {settings['last_reset_date']}"
         )
         answer = input(
-            "\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\nOption: "
+            "\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\n\nOption: "
         ).strip()
         if answer == "1":
             switch_auto_mode(settings)
