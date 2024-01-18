@@ -43,7 +43,7 @@ def view_or_edit(filepath: str, failed_sender_path: str) -> None:
         else:
             printable_contacts = make_list_printable(contacts)
             print_person(printable_contacts)
-            print("Look up!\n")
+            print("Look up!")
         raise BackFromEdit
 
     # run edit mode
@@ -212,6 +212,7 @@ def edit_birthday(contact_to_edit: list[dict]) -> None:
     edit_contact(contact_to_edit, "birthday", formatted_birthday)
     print("\nSuccess!")
 
+
 def edit_email(
     contact_to_edit: list[dict], failed_senders_path: str = "optional_parameter.csv"
 ) -> None:
@@ -244,10 +245,10 @@ def delete_person(
     filepath: str, contacts: list[dict], contact_to_edit: list[dict]
 ) -> None:
     while not (
-        answer := input("You sure? (yes/no): ").strip().casefold()
-    ) or answer not in ["yes", "no"]:
-        print(f"Enter only 'yes' or 'no'")
-    if answer == "yes":
+        answer := input("\nAre you sure?\n1. Yes\n2. No\n\nOption: ").strip().casefold()
+    ) or answer not in ["1", "2"]:
+        print(f"Enter only '1' or '2'")
+    if answer == "1":
         contacts = delete_contact(contacts, contact_to_edit)
         rewrite_csv(filepath, contacts)
         print("\nSuccess!")
@@ -261,7 +262,3 @@ def finish(filepath: str, contacts: list[dict], contact_to_edit: list[dict]) -> 
     print_person(edited_contact)
     print("All changes have been saved!\n")
     raise BackFromEdit
-
-
-if __name__ == "__main__":
-    view_or_edit("contacts.csv", "failed_recipients.csv")

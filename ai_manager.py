@@ -4,19 +4,23 @@ import os
 from openai import OpenAI, AuthenticationError, RateLimitError, APIConnectionError
 from dataclasses import dataclass, field
 from data_manager import read_csv, turning_years
+
 load_dotenv()
-MY_NAME = api_key=os.environ["MY_NAME"]
+MY_NAME = api_key = os.environ["MY_NAME"]
 
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"],)
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"],
+)
 
-chat_history= [{"role": "system", "content": f"Instructions for the chatbot" }]
+chat_history = [{"role": "system", "content": f"Instructions for the chatbot"}]
 
 
 class WriteManual(Exception):
     pass
 
+
 @dataclass
-class MessageMaker():
+class MessageMaker:
     contact: list[dict]
     global_history: list[dict]
 
@@ -28,7 +32,7 @@ class MessageMaker():
         self.set_users_past_messages()
         self.chat_history = [
             {
-                "role": "system", 
+                "role": "system",
                 "content": (
                     f"You are a constructor of a birthday congratulation email's body"
                     f"for my contact {self.contact[0]['name']}. "
@@ -46,22 +50,33 @@ class MessageMaker():
                     f"8. Avoid mentioning any past experiences or memories or my relationship to the person."
                     f"9. Congratulation should start with something similar to"
                     f" congratulations on your {turning_years(self.contact)} birthday!"
-                )
+                ),
             },
         ]
 
-
     def set_users_past_messages(self) -> list:
         if self.global_history:
-            self.users_past_messages = [person["message"] for person in self.global_history if "uid" in person and person["uid"] == self.contact[0]["uid"]]
+            self.users_past_messages = [
+                person["message"]
+                for person in self.global_history
+                if "uid" in person and person["uid"] == self.contact[0]["uid"]
+            ]
         else:
-            self.users_past_messages = ["There have not been any previous congratulations"]
-
+            self.users_past_messages = [
+                "There have not been any previous congratulations"
+            ]
 
     def get_prompt(self) -> str:
         try:
-            self.chat_history.append({"role": "user", "content": "Please take a deep breath, relax, and write me that letter."})
-            api_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=self.chat_history)
+            self.chat_history.append(
+                {
+                    "role": "user",
+                    "content": "Please take a deep breath, relax, and write me that letter.",
+                }
+            )
+            api_response = client.chat.completions.create(
+                model="gpt-3.5-turbo", messages=self.chat_history
+            )
             api_message = api_response.choices[0].message.content
             self.chat_history.append({"role": "assistant", "content": api_message})
             return api_message
@@ -74,12 +89,15 @@ class MessageMaker():
         except APIConnectionError:
             print("\nOpenAI API request failed to connect.")
             raise WriteManual
-    
 
     def re_prompt(self, corrections) -> str:
         try:
-            self.chat_history.append({"role": "user", "content": f"Conduct another variation. {corrections}"})
-            api_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=self.chat_history)
+            self.chat_history.append(
+                {"role": "user", "content": f"Conduct another variation. {corrections}"}
+            )
+            api_response = client.chat.completions.create(
+                model="gpt-3.5-turbo", messages=self.chat_history
+            )
             api_message = api_response.choices[0].message.content
             self.chat_history.append({"role": "assistant", "content": api_message})
             return api_message
@@ -92,7 +110,3 @@ class MessageMaker():
         except APIConnectionError:
             print("\nOpenAI API request failed to connect.")
             raise WriteManual
-            
-
-if __name__ == "__main__":
-    ...

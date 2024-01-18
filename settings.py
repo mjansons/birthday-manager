@@ -10,15 +10,22 @@ import time
 class BackFromSettings(Exception):
     pass
 
-def settings_mode(contact_file_path, history_file_path, failed_recipients_path, the_settings_path):
+
+def settings_mode(
+    contact_file_path, history_file_path, failed_recipients_path, the_settings_path
+):
     filepath = the_settings_path
     settings = load_settings(filepath)
     while True:
         # Read settings to get the latest status
         settings = load_settings(filepath)
         time.sleep(1.5)
-        print(f"\nCurrent Settings:\n\nAuto mode ON: {settings['auto_mode_on']}\nAPI is working: {settings['api_is_working']}\nLast Reset Date: {settings['last_reset_date']}")
-        answer = input("\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\nOption: ").strip()
+        print(
+            f"\nCurrent Settings:\n\nAuto mode ON: {settings['auto_mode_on']}\nAPI is working: {settings['api_is_working']}\nLast Reset Date: {settings['last_reset_date']}"
+        )
+        answer = input(
+            "\nSwitch auto mode?\n\n1. Yes\n2. I'm done, return to Main Menu\nOption: "
+        ).strip()
         if answer == "1":
             switch_auto_mode(settings)
             update_last_reset_date(settings)
@@ -26,11 +33,19 @@ def settings_mode(contact_file_path, history_file_path, failed_recipients_path, 
 
             # start auto mode if it was off in the settings and now is turned on
             if is_auto_mode_on(filepath):
-                auto_thread = threading.Thread(target=auto_congratulation_mode,args=(contact_file_path, history_file_path, failed_recipients_path, the_settings_path))
+                auto_thread = threading.Thread(
+                    target=auto_congratulation_mode,
+                    args=(
+                        contact_file_path,
+                        history_file_path,
+                        failed_recipients_path,
+                        the_settings_path,
+                    ),
+                )
                 auto_thread.daemon = True
                 auto_thread.start()
                 time.sleep(1.33)
-            
+
         elif answer == "2":
             print("\nAll changes have been saved!")
             raise BackFromSettings
@@ -55,7 +70,9 @@ def load_settings(filepath: str) -> dict:
         create_settings_file(filepath)
     with open(filepath, "r") as file:
         lines = file.readlines()
-    settings = {line.split("=")[0]: line.split("=")[1].strip() for line in lines if "=" in line}
+    settings = {
+        line.split("=")[0]: line.split("=")[1].strip() for line in lines if "=" in line
+    }
     return settings
 
 
@@ -79,7 +96,7 @@ def switch_api_working(settings: dict) -> dict:
     elif settings["api_is_working"] == "True":
         settings["api_is_working"] = False
     return settings
-    
+
 
 def update_last_reset_date(settings: dict) -> None:
     today = datetime.now().date()
@@ -101,7 +118,9 @@ def is_auto_mode_on(setting_filepath: str) -> bool:
         return False
 
 
-def check_and_reset_if_new_year(setting_filepath: str, all_contacts_filepath: str) -> None:
+def check_and_reset_if_new_year(
+    setting_filepath: str, all_contacts_filepath: str
+) -> None:
     settings = load_settings(setting_filepath)
     if is_new_year(settings["last_reset_date"]):
         try:
@@ -113,7 +132,3 @@ def check_and_reset_if_new_year(setting_filepath: str, all_contacts_filepath: st
 
         update_last_reset_date(settings)
         save_settings(setting_filepath, settings)
-
-
-if __name__ == "__main__":
-    settings_mode("settings.txt")

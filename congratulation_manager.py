@@ -1,5 +1,16 @@
 """this file manages congratulation sending"""
-from data_manager import create_csv, append_csv, read_csv, get_todays_celebrators, make_list_printable, print_person, edit_specific_contact, rewrite_csv, delete_contact, append_history_csv
+from data_manager import (
+    create_csv,
+    append_csv,
+    read_csv,
+    get_todays_celebrators,
+    make_list_printable,
+    print_person,
+    edit_specific_contact,
+    rewrite_csv,
+    delete_contact,
+    append_history_csv,
+)
 from edit_contacts import ask_which_contact_to_manipulate
 from ai_manager import MessageMaker
 from email_manager import send_mail
@@ -7,10 +18,14 @@ from ai_manager import WriteManual
 from email_manager import WrongEmail
 from settings import load_settings, switch_api_working, save_settings
 
+
 class BackFromCongratulations(Exception):
     pass
 
-def congratulation_mode(contact_file_path, history_file_path, failed_senders, settings_filepath):
+
+def congratulation_mode(
+    contact_file_path, history_file_path, failed_senders, settings_filepath
+):
     create_csv(history_file_path)
     try:
         contacts = read_csv(contact_file_path)
@@ -18,15 +33,16 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
         contacts = []
 
     todays_celebrators = get_todays_celebrators(contacts, False)
-    
-    while len(todays_celebrators) > 0:
 
+    while len(todays_celebrators) > 0:
         # select who to congratulate if there is more than 1
         if len(todays_celebrators) > 1:
             preview = make_list_printable(todays_celebrators)
             print("\nPeople to be congratulated today:")
             print_person(preview)
-            contact_to_congratulate = ask_which_contact_to_manipulate(todays_celebrators)
+            contact_to_congratulate = ask_which_contact_to_manipulate(
+                todays_celebrators
+            )
         else:
             preview = make_list_printable(todays_celebrators)
             print("\nPeople to be congratulated today:")
@@ -35,7 +51,7 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
 
         # decide on AI or Manual congratulation mode
         answer = decide_how_to_write_message()
-        
+
         # AI
         if answer == "1":
             # generate congratulation message
@@ -60,7 +76,7 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
 
             # preview
             print("\nThis is how your email will look:")
-            print(f"\nTo: {contact_to_congratulate[0]["email"]}")
+            print(f"\nTo: {contact_to_congratulate[0]['email']}")
             print("Subject: Happy Birthday!")
             print(message, "\n")
 
@@ -78,7 +94,7 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
                     message = bot.re_prompt(corrections)
 
                     # preview
-                    print(f"\nTo: {contact_to_congratulate[0]["email"]}")
+                    print(f"\nTo: {contact_to_congratulate[0]['email']}")
                     print("Subject: Happy Birthday!")
                     print(message, "\n")
                     continue
@@ -91,8 +107,8 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
 
                 elif answer == "4":
                     raise BackFromCongratulations
-    
-        # custom    
+
+        # custom
         elif answer == "2":
             subject, message = write_myself(contact_to_congratulate)
         try:
@@ -101,18 +117,29 @@ def congratulation_mode(contact_file_path, history_file_path, failed_senders, se
         except WrongEmail as e:
             print(e)
             append_csv(failed_senders, contact_to_congratulate)
-            edit_specific_contact(contacts, contact_to_congratulate, "congratulated", "True")
+            edit_specific_contact(
+                contacts, contact_to_congratulate, "congratulated", "True"
+            )
             rewrite_csv(contact_file_path, contacts)
-            todays_celebrators = delete_contact(todays_celebrators, contact_to_congratulate)
-        
+            todays_celebrators = delete_contact(
+                todays_celebrators, contact_to_congratulate
+            )
+
         else:
-            append_history_csv(history_file_path, contact_to_congratulate, subject, message)
-            edit_specific_contact(contacts, contact_to_congratulate, "congratulated", "True")
+            append_history_csv(
+                history_file_path, contact_to_congratulate, subject, message
+            )
+            edit_specific_contact(
+                contacts, contact_to_congratulate, "congratulated", "True"
+            )
             rewrite_csv(contact_file_path, contacts)
-            todays_celebrators = delete_contact(todays_celebrators, contact_to_congratulate)
+            todays_celebrators = delete_contact(
+                todays_celebrators, contact_to_congratulate
+            )
 
     print("Nobody needs to be congratulated, come back another day!")
     raise BackFromCongratulations
+
 
 def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
     while True:
@@ -121,14 +148,14 @@ def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
         print("Body (type 'DONE' on a new line to finish):")
         while True:
             line = input()
-            if line.strip().upper() == 'DONE':
+            if line.strip().upper() == "DONE":
                 break
             lines.append(line)
-        message = '\n'.join(lines)
-        
+        message = "\n".join(lines)
+
         # preview
         print("\nThis is how your email will look:")
-        print(f"\nTo: {contact_to_congratulate[0]["email"]}")
+        print(f"\nTo: {contact_to_congratulate[0]['email']}")
         print(f"Subject: {subject}")
         print(f"{message}\n")
 
@@ -156,22 +183,26 @@ def ask_ai_message_confirmation():
             "3. I want to write myself\n"
             "4. Exit to main menu\n"
             "Answer: "
-        ).strip().casefold()
-) or answer not in ["1", "2", "3", "4"]:
+        )
+        .strip()
+        .casefold()
+    ) or answer not in ["1", "2", "3", "4"]:
         print("Enter only '1' or '2', or '3', or '4'")
     return answer
 
 
 def ask_reg_message_confirmation():
     while not (
-    answer := input(
-        "Ready to send?\n\n"
-        "1. Yes\n"
-        "2. No, I want to try again\n"
-        "3. Exit to main menu\n"
-        "Answer: "
-    ).strip().casefold()
-) or answer not in ["1", "2", "3"]:
+        answer := input(
+            "Ready to send?\n\n"
+            "1. Yes\n"
+            "2. No, I want to try again\n"
+            "3. Exit to main menu\n"
+            "Answer: "
+        )
+        .strip()
+        .casefold()
+    ) or answer not in ["1", "2", "3"]:
         print("Enter only '1' or '2', or '3'")
     return answer
 
@@ -182,10 +213,15 @@ def decide_how_to_write_message() -> str:
             "\nDo you want AI to generate a message for you?\n"
             "1. Yes\n"
             "2. No\nAnswer: "
-        ).strip().casefold()
+        )
+        .strip()
+        .casefold()
     ) or answer not in ["1", "2"]:
         print("Enter only '1' or '2'")
     return answer
 
+
 if __name__ == "__main__":
-    congratulation_mode("contacts.csv", "history.csv", "failed_recipients.csv", "settings.txt")
+    congratulation_mode(
+        "contacts.csv", "history.csv", "failed_recipients.csv", "settings.txt"
+    )

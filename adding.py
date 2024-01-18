@@ -44,13 +44,13 @@ class Person:
                 "congratulated": self.congratulated,
             }
         ]
-    
+
     @classmethod
     def format_birthday(cls, birthday) -> str:
         y, m, d = re.split(r"[-./]", birthday)
         formatted_birthday = f"{y}.{m.zfill(2)}.{d.zfill(2)}"
         return formatted_birthday
-    
+
     @classmethod
     def get_data(cls, listdict) -> object:
         while not (name := input("Full name: ").strip()):
@@ -83,7 +83,7 @@ class Person:
         # get email
         while not (email := input("Email: ").strip()) or not is_valid_email(email):
             print("Enter a valid email")
-            
+
         # get about
         about = input("About: ").strip()
 
@@ -130,7 +130,7 @@ class Person:
         if not is_valid_birthday(birthday) or not birthday:
             raise ValueError("Invalid Birthday")
         birthday = Person.format_birthday(birthday)
-    
+
         self._birthday = birthday
 
     @email.setter
@@ -170,7 +170,3 @@ def add_contact(filepath):
             else:
                 print("Invalid option")
                 continue
-
-
-if __name__ == "__main__":
-    add_contact("contacts.csv")

@@ -13,7 +13,9 @@ class WrongEmail(Exception):
     pass
 
 
-def send_mail(contact: list[dict], message: str, subject: str = "Happy Birthday!") -> None:
+def send_mail(
+    contact: list[dict], message: str, subject: str = "Happy Birthday!"
+) -> None:
     email_sender = os.environ.get("MY_EMAIL")
     email_password = os.environ.get("MY_EMAIL_PASS")
     email_receiver = contact[0]["email"]
@@ -41,7 +43,3 @@ def send_mail(contact: list[dict], message: str, subject: str = "Happy Birthday!
         raise WrongEmail(
             "Email could not be delivered. Probably, wrong e-mail address."
         )
-
-
-if __name__ == "__main__":
-    ...

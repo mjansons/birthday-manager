@@ -17,19 +17,21 @@ from email_manager import WrongEmail
 import time
 
 
-def auto_congratulation_mode(contact_file_path, history_file_path, failed_recipients_path, settings_file_path):
+def auto_congratulation_mode(
+    contact_file_path, history_file_path, failed_recipients_path, settings_file_path
+):
     """This does the same thing as congratulation manager, except it skips user inputs/ verifications"""
     # Loading here to Avoid Circular Dependency on settings file
     from settings import (
-    is_auto_mode_on,
-    check_and_reset_if_new_year,
-    load_settings,
-    switch_auto_mode,
-    update_last_reset_date,
-    save_settings,
-    switch_api_working
-)
-    
+        is_auto_mode_on,
+        check_and_reset_if_new_year,
+        load_settings,
+        switch_auto_mode,
+        update_last_reset_date,
+        save_settings,
+        switch_api_working,
+    )
+
     while is_auto_mode_on(settings_file_path):
         create_csv(history_file_path)
         check_and_reset_if_new_year(settings_file_path, contact_file_path)
@@ -46,7 +48,7 @@ def auto_congratulation_mode(contact_file_path, history_file_path, failed_recipi
                     global_history = read_csv(history_file_path)
                 except ValueError:
                     global_history = []
-                
+
                 bot = MessageMaker([contact_to_congratulate], global_history)
                 try:
                     # switch "api_working_on", if it was off
@@ -64,24 +66,29 @@ def auto_congratulation_mode(contact_file_path, history_file_path, failed_recipi
                     update_last_reset_date(settings)
                     save_settings(settings_file_path, settings)
                     break
-                    
 
                 try:
                     send_mail([contact_to_congratulate], message, subject)
                 except WrongEmail:
                     append_csv(failed_recipients_path, [contact_to_congratulate])
-                    edit_specific_contact(contacts, [contact_to_congratulate], "congratulated", "True")
+                    edit_specific_contact(
+                        contacts, [contact_to_congratulate], "congratulated", "True"
+                    )
                     rewrite_csv(contact_file_path, contacts)
-                    todays_celebrators = delete_contact(todays_celebrators, [contact_to_congratulate])
+                    todays_celebrators = delete_contact(
+                        todays_celebrators, [contact_to_congratulate]
+                    )
 
                 else:
-                    append_history_csv(history_file_path, [contact_to_congratulate], subject, message)
-                    edit_specific_contact(contacts, [contact_to_congratulate], "congratulated", "True")
+                    append_history_csv(
+                        history_file_path, [contact_to_congratulate], subject, message
+                    )
+                    edit_specific_contact(
+                        contacts, [contact_to_congratulate], "congratulated", "True"
+                    )
                     rewrite_csv(contact_file_path, contacts)
-                    todays_celebrators = delete_contact(todays_celebrators, [contact_to_congratulate])
+                    todays_celebrators = delete_contact(
+                        todays_celebrators, [contact_to_congratulate]
+                    )
         # no need to re-check for anyone's birthay constantly
-        time.sleep(60)
-
-
-if __name__ == "__main__":
-    ...
+        time.sleep(1400)

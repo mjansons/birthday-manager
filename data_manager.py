@@ -40,7 +40,6 @@ def rewrite_csv(filepath: str, data: list[dict]) -> None:
             writer.writerows(data)
 
 
-
 def append_csv(filepath: str, data: list[dict]) -> None:
     file_is_empty = not os.path.exists(filepath) or open(filepath).readline() == ""
 
@@ -102,7 +101,7 @@ def search_by_keyword(
 
 
 def make_list_printable(the_list) -> list:
-    format_person = lambda p: '\n'.join([f'{k}: {v}' for k, v in p.items()])
+    format_person = lambda p: "\n".join([f"{k}: {v}" for k, v in p.items()])
     strings = [format_person(person) for person in the_list]
     return strings
 
@@ -122,7 +121,9 @@ def edit_contact(contacts: list[dict], key: str, new_value: str) -> list[dict]:
     return contacts
 
 
-def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: str, new_value: str) -> list[dict]:
+def edit_specific_contact(
+    full_list: list[dict], my_contact: list[dict], key: str, new_value: str
+) -> list[dict]:
     """update key for a selected contact in the list"""
     for person in full_list:
         if person["uid"] == my_contact[0]["uid"]:
@@ -130,7 +131,9 @@ def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: st
     return full_list
 
 
-def delete_contact(all_contacts: list[dict], removable_contact_list: list[dict]) -> list[dict]:
+def delete_contact(
+    all_contacts: list[dict], removable_contact_list: list[dict]
+) -> list[dict]:
     removable_contacts_uids = [contact["uid"] for contact in removable_contact_list]
     return [d for d in all_contacts if d["uid"] not in removable_contacts_uids]
 
@@ -172,7 +175,6 @@ def turning_years(person: list[dict]) -> int:
     birthday_date = datetime.strptime(birthday, "%Y.%m.%d").date()
     today_date = datetime.now().date()
     return today_date.year - birthday_date.year
-        
 
 
 def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dict]:
@@ -189,7 +191,3 @@ def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dic
             if is_birthday_today([person]) and person["congratulated"] == "False"
         ]
     return todays_celebrators
-
-
-if __name__ == "__main__":
-    ...
