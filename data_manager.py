@@ -171,13 +171,8 @@ def turning_years(person: list[dict]) -> int:
     birthday = person[0]["birthday"]
     birthday_date = datetime.strptime(birthday, "%Y.%m.%d").date()
     today_date = datetime.now().date()
-
-    if (today_date.month, today_date.day) < (birthday_date.month, birthday_date.day):
-        # Birthday is yet to come this year
-        return today_date.year - birthday_date.year + 1
-    else:
-        # Birthday has already occurred this year
-        return today_date.year - birthday_date.year + 1
+    return today_date.year - birthday_date.year
+        
 
 
 def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dict]:
