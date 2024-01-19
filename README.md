@@ -38,6 +38,7 @@ This Python project helps you manage and automate birthday congratulations for y
     - Select Security.
     - Under "Signing in to Google," select 2-Step Verification.
     - At the bottom of the page, select App passwords.
+    - Generate one and use it as MY_EMAIL_PASS.
 3. Create your own `.env` file and populate it with the following values:
     ```
     MY_NAME=John Doe
