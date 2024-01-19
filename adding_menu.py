@@ -1,8 +1,9 @@
 """This file contains code to add new contacts"""
+
 from dataclasses import dataclass
 import re
 import time
-from validators import is_valid_birthday, is_valid_email
+from data_validators import is_valid_birthday, is_valid_email
 from data_manager import (
     append_csv,
     read_csv,
@@ -170,3 +171,5 @@ def add_contact(filepath):
             else:
                 print("Invalid option")
                 continue
+
+

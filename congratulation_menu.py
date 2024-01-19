@@ -1,4 +1,5 @@
 """this file manages congratulation sending"""
+
 from data_manager import (
     create_csv,
     append_csv,
@@ -10,22 +11,23 @@ from data_manager import (
     rewrite_csv,
     delete_contact,
     append_history_csv,
+    load_settings,
+    switch_api_working,
+    save_settings
 )
-from edit_contacts import ask_which_contact_to_manipulate
+from edit_menu import ask_which_contact_to_manipulate
 from ai_manager import MessageMaker
 from email_manager import send_mail
 from ai_manager import WriteManual
 from email_manager import WrongEmail
-from settings import load_settings, switch_api_working, save_settings
 
 
 class BackFromCongratulations(Exception):
     pass
 
 
-def congratulation_mode(
-    contact_file_path, history_file_path, failed_senders, settings_filepath
-):
+def regular_congratulation_mode(contact_file_path, history_file_path, failed_senders, settings_filepath):
+    """the main function for congratulations"""
     create_csv(history_file_path)
     try:
         contacts = read_csv(contact_file_path)
@@ -142,6 +144,7 @@ def congratulation_mode(
 
 
 def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
+    """function that prompts user to conduct his/her own congratulation message"""
     while True:
         subject = input("Subject: ")
         lines = []
@@ -174,15 +177,15 @@ def write_myself(contact_to_congratulate: list[dict]) -> tuple[str, str]:
     return subject, message
 
 
-def ask_ai_message_confirmation():
+def ask_ai_message_confirmation() -> str:
     while not (
         answer := input(
             "Ready to send?\n\n"
             "1. Yes\n"
             "2. No, generate another option\n"
             "3. I want to write myself\n"
-            "4. Exit to main menu\n"
-            "Answer: "
+            "4. Exit to main menu\n\n"
+            "Option: "
         )
         .strip()
         .casefold()
@@ -191,14 +194,14 @@ def ask_ai_message_confirmation():
     return answer
 
 
-def ask_reg_message_confirmation():
+def ask_reg_message_confirmation() -> str:
     while not (
         answer := input(
             "Ready to send?\n\n"
             "1. Yes\n"
             "2. No, I want to try again\n"
-            "3. Exit to main menu\n"
-            "Answer: "
+            "3. Exit to main menu\n\n"
+            "Option: "
         )
         .strip()
         .casefold()
@@ -210,18 +213,13 @@ def ask_reg_message_confirmation():
 def decide_how_to_write_message() -> str:
     while not (
         answer := input(
-            "\nDo you want AI to generate a message for you?\n"
+            "\nDo you want AI to generate a message for you?\n\n"
             "1. Yes\n"
-            "2. No\nAnswer: "
+            "2. No\n\n"
+            "Option: "
         )
         .strip()
         .casefold()
     ) or answer not in ["1", "2"]:
         print("Enter only '1' or '2'")
     return answer
-
-
-if __name__ == "__main__":
-    congratulation_mode(
-        "contacts.csv", "history.csv", "failed_recipients.csv", "settings.txt"
-    )

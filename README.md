@@ -2,46 +2,60 @@
 
 This Python project helps you manage and automate birthday congratulations for your contacts.
 
-- **Automated Congratulation**: Automatically sends birthday congratulations to contacts.
-- **Manual Congratulation**: Manually send birthday congratulations to contacts.
-- **Data**: Keep track of upcoming birthdays and how old who is getting.
-- **Contact Management**: Add, view, edit, or remove contacts easily.
-- **History Tracking**: View the history of sent congratulatory messages.
-- **Settings Configuration**: Easily configure project settings.
+## Features
+- **Generate congratulation e-mail with AI**, taking into account:
+    - Name
+    - Age
+    - Previous congratulation messages
+    - Any additional information provided
+    - Ability to re-generate messages based on your suggestions
+- **Auto-congratulation mode**
+    - AI generates semi-formal messages unless about section indicates otherwise
+- **Manually generate congratulation e-mail**
+    - Create your own subject
+    - Conduct a custom multi-line e-mail message
+- **View all contacts**
+- **Search and Edit specific contact details**
+    - Name
+    - Email
+    - About
+- **View sent message history**
+    - Contact
+    - Date and time
+    - Message
+- **View failed senders**
+- **Wipe all files**
+- **Error handling, flagging, yearly data re-set**
 
-### Prerequisites
+## Prerequisites
+- Python 3.12
+- Gmail account
 
-Make sure you have Python 3 installed on your machine. I use 3.12.
-Sorry if there are 
+### Steps
+1. Generate your own OpenAI API key from: `https://platform.openai.com/api-keys`
+2. Generate your Gmail app password:
+    - Go to your Google Account.
+    - Select Security.
+    - Under "Signing in to Google," select 2-Step Verification.
+    - At the bottom of the page, select App passwords.
+3. Create your own `.env` file and populate it with the following values:
+    ```
+    MY_NAME=John Doe
+    MY_EMAIL=youremail@gmail.com
+    MY_EMAIL_PASS=jkdf dsas rtee vfgg
+    OPENAI_API_KEY=fd-1234JNKdfgUTadf4QSJKDFFgfSARLEjnjfhgddsg45
+    ```
 
-### Installing
-
+## Installing
 1. Install the required dependencies:
-
-```
-
-openai==1.7.2
-python-dotenv==1.0.0
-validator-collection==1.5.0
+    ```bash
+    pip install openai
+    pip install python-dotenv
+    pip install validator-collection
+    ```
 
 ## Usage
-
-create your own .env file and populate it with the following values:
-
-MY_NAME=Your Name
-MY_EMAIL=Your_Gmail_Address
-MY_EMAIL_PASS=Your_Gmail_App_Password
-OPENAI_API_KEY=The Api key from https://platform.openai.com/api-keys
-
-p.s.
-make sure you can actually send stuff from your gmail with this 2 step verification, more info: https://www.youtube.com/watch?v=g_j6ILT-X0k
-
-p.p.s
-if you don't have tokens in your open AI api key, contact Turing college, they can sort you out, at least that's what Giedrius said.
-
 To run the program, execute the following command in your terminal:
-
 ```bash
 python3 main.py
-
 ```

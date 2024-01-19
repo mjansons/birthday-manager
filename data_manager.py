@@ -1,9 +1,9 @@
 """All file manipulation functions are here, searches and formatting for printing"""
+
 import os
 import csv
 import re
 from datetime import datetime
-from validators import is_birthday_today
 
 
 def create_csv(filepath: str) -> None:
@@ -50,9 +50,7 @@ def append_csv(filepath: str, data: list[dict]) -> None:
         writer.writerows(data)
 
 
-def append_history_csv(
-    filepath: str, data: list[dict], subject: str, message: str
-) -> None:
+def append_history_csv(filepath: str, data: list[dict], subject: str, message: str) -> None:
     the_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     message = message.replace("\n", "(new-line)")
@@ -76,6 +74,26 @@ def append_history_csv(
         )
 
 
+def edit_contact(contacts: list[dict], key: str, new_value: str) -> list[dict]:
+    """update key for all contacts in the list provided list"""
+    for person in contacts:
+        person[key] = new_value
+    return contacts
+
+
+def edit_specific_contact(full_list: list[dict], my_contact: list[dict], key: str, new_value: str) -> list[dict]:
+    """update key for a selected contact in the list"""
+    for person in full_list:
+        if person["uid"] == my_contact[0]["uid"]:
+            person[key] = new_value
+    return full_list
+
+
+def delete_contact(all_contacts: list[dict], removable_contact_list: list[dict]) -> list[dict]:
+    removable_contacts_uids = [contact["uid"] for contact in removable_contact_list]
+    return [d for d in all_contacts if d["uid"] not in removable_contacts_uids]
+
+# searching in list related functions
 def get_duplicates(listdict: list[dict], key: str, value: str) -> list[str]:
     """search contacts using one dict key vs exact match"""
     duplicates = [person for person in listdict if person.get(key) == value]
@@ -83,9 +101,7 @@ def get_duplicates(listdict: list[dict], key: str, value: str) -> list[str]:
     return duplicates
 
 
-def search_by_keyword(
-    listdict: list[dict], search_keys: list[str], keyword: str
-) -> list[str]:
+def search_by_keyword(listdict: list[dict], search_keys: list[str], keyword: str) -> list[str]:
     """search contacts using many dict keys with regex"""
 
     escaped_keyword = re.escape(keyword)
@@ -100,6 +116,7 @@ def search_by_keyword(
     return matches
 
 
+# formatting list for printing functions
 def make_list_printable(the_list) -> list:
     format_person = lambda p: "\n".join([f"{k}: {v}" for k, v in p.items()])
     strings = [format_person(person) for person in the_list]
@@ -113,31 +130,7 @@ def print_person(file: list) -> None:
         print(f"Nr. {index + 1}")
         print(person, "\n")
 
-
-def edit_contact(contacts: list[dict], key: str, new_value: str) -> list[dict]:
-    """update key for all contacts in the list provided list"""
-    for person in contacts:
-        person[key] = new_value
-    return contacts
-
-
-def edit_specific_contact(
-    full_list: list[dict], my_contact: list[dict], key: str, new_value: str
-) -> list[dict]:
-    """update key for a selected contact in the list"""
-    for person in full_list:
-        if person["uid"] == my_contact[0]["uid"]:
-            person[key] = new_value
-    return full_list
-
-
-def delete_contact(
-    all_contacts: list[dict], removable_contact_list: list[dict]
-) -> list[dict]:
-    removable_contacts_uids = [contact["uid"] for contact in removable_contact_list]
-    return [d for d in all_contacts if d["uid"] not in removable_contacts_uids]
-
-
+# birthdate related functions
 def add_days_until_birthday(contacts: list[dict]) -> list[dict]:
     """returns a new sorted list with days until birthday"""
 
@@ -178,6 +171,7 @@ def turning_years(person: list[dict]) -> int:
 
 
 def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dict]:
+    from data_validators import is_birthday_today
     # include everyone
     if congr == True:
         todays_celebrators = [
@@ -191,3 +185,68 @@ def get_todays_celebrators(contacts: list[dict], congr: bool = True) -> list[dic
             if is_birthday_today([person]) and person["congratulated"] == "False"
         ]
     return todays_celebrators
+
+# more settings related functions that deal with txt files
+def create_settings_file(filepath: str) -> None:
+    if not os.path.exists(filepath):
+        default_settings = {
+            "auto_mode_on": False,
+            "api_is_working": True,
+            "last_reset_date": datetime.now().date().strftime("%Y-%m-%d"),
+        }
+        with open(filepath, "w") as file:
+            for key, value in default_settings.items():
+                file.write(f"{key}={value}\n")
+
+
+def load_settings(filepath: str) -> dict:
+    if not os.path.exists(filepath):
+        create_settings_file(filepath)
+    with open(filepath, "r") as file:
+        lines = file.readlines()
+    settings = {
+        line.split("=")[0]: line.split("=")[1].strip() for line in lines if "=" in line
+    }
+    return settings
+
+
+def save_settings(filepath: str, settings: dict) -> None:
+    with open(filepath, "w") as file:
+        for key, value in settings.items():
+            file.write(f"{key}={value}\n")
+
+
+def switch_auto_mode(settings: dict) -> None:
+    if settings["auto_mode_on"] == "False":
+        settings["auto_mode_on"] = True
+    elif settings["auto_mode_on"] == "True":
+        settings["auto_mode_on"] = False
+    return settings
+
+
+def switch_api_working(settings: dict) -> dict:
+    if settings["api_is_working"] == "False":
+        settings["api_is_working"] = True
+    elif settings["api_is_working"] == "True":
+        settings["api_is_working"] = False
+    return settings
+
+
+def update_last_reset_date(settings: dict) -> None:
+    today = datetime.now().date()
+    settings["last_reset_date"] = today.strftime("%Y-%m-%d")
+
+
+def check_and_reset_if_new_year(setting_filepath: str, all_contacts_filepath: str) -> None:
+    from data_validators import is_new_year
+    settings = load_settings(setting_filepath)
+    if is_new_year(settings["last_reset_date"]):
+        try:
+            all_contacts = read_csv(all_contacts_filepath)
+            new_list = edit_contact(all_contacts, "congratulated", "False")
+            rewrite_csv(all_contacts_filepath, new_list)
+        except ValueError:
+            pass
+
+        update_last_reset_date(settings)
+        save_settings(setting_filepath, settings)

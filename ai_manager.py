@@ -1,12 +1,14 @@
 """this file manages openai api calls"""
-from dotenv import load_dotenv
+
 import os
+from dotenv import load_dotenv
 from openai import OpenAI, AuthenticationError, RateLimitError, APIConnectionError
 from dataclasses import dataclass, field
-from data_manager import read_csv, turning_years
+from data_manager import turning_years
 
 load_dotenv()
-MY_NAME = api_key = os.environ["MY_NAME"]
+
+MY_NAME = os.environ["MY_NAME"]
 
 client = OpenAI(
     api_key=os.environ["OPENAI_API_KEY"],
@@ -33,24 +35,34 @@ class MessageMaker:
         self.chat_history = [
             {
                 "role": "system",
-                "content": (
-                    f"You are a constructor of a birthday congratulation email's body"
-                    f"for my contact {self.contact[0]['name']}. "
-                    f"1. The message should start with Dear [person's name]. "
-                    f"2. It should be minimum 2 and max 4 sentences, unless I tell you otherwise. "
-                    f"3. It should end with Warm Wishes,{MY_NAME} at the bottom of the email, as email should. "
-                    f"But don't sign it twice. Make sure there is only one signature.  "
-                    f"Never use any placeholders, for signatures, age or anything, if info is missing. Take a general approach.  "
-                    f"4. It has to take into account my notes about the contact: \"{self.contact[0]['about']}\". "
-                    f"5. It has to be unique. Here are some past messages I've sent: {self.users_past_messages}"
-                    f"6. If I didn't indicate that it's a close friend or family member, treat it quite formally "
-                    f"and avoid references to any past experiences or feelings and avoid mentioning our friendship "
-                    f"or the person's characteristics or anything we potentially could have done together"
-                    f"7. It has to be quite general."
-                    f"8. Avoid mentioning any past experiences or memories or my relationship to the person."
-                    f"9. Congratulation should start with something similar to"
-                    f" congratulations on your {turning_years(self.contact)} birthday!"
-                ),
+                "content": f"""
+                    You are a constructor of a birthday congratulation email's body
+                    for my contact {self.contact[0]['name']}. 
+                    1. The message should start with Dear [person's name]. 
+                    2. It should be minimum 2 and max 4 sentences, 
+                    unless I tell you otherwise. 
+                    3. It should end with Warm Wishes,{MY_NAME} at the bottom of the email, 
+                    as email should. But don't sign it twice. 
+                    Make sure there is only one signature.  
+                    Never use any placeholders, for signatures, age or anything, 
+                    if info is missing. Take a general approach.  
+                    4. It has to take into account my notes about the 
+                    contact: "{self.contact[0]['about']}". 
+                    5. It has to be unique. Here are some past messages 
+                    I've sent: {self.users_past_messages}
+                    6. If I didn't indicate that it's a close friend or family member, 
+                    treat it quite formally and avoid references to any past 
+                    experiences or feelings and avoid mentioning our friendship 
+                    or the person's characteristics or anything we potentially 
+                    could have done together
+                    7. It has to be quite general.
+                    8. Avoid mentioning any past experiences or memories 
+                    or my relationship to the person.
+                    9. Congratulation should start with something similar to
+                    congratulations on your {turning_years(self.contact)} birthday!
+                    10. If it's a family member, indicate that I appreciate having them
+                    in my life.
+                """,
             },
         ]
 

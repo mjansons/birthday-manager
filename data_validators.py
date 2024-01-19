@@ -2,6 +2,7 @@
 
 from validator_collection import validators, errors
 from datetime import datetime
+from data_manager import load_settings
 import re
 
 
@@ -24,7 +25,6 @@ def is_valid_birthday(bday: str) -> bool:
 
 
 def is_valid_email(address: str) -> bool:
-    """returns True or False for email"""
     try:
         validators.email(address)
         return True
@@ -33,7 +33,6 @@ def is_valid_email(address: str) -> bool:
 
 
 def is_birthday_today(person: list[dict]) -> bool:
-    """checks if bday is today"""
     birthday = person[0]["birthday"]
     # Birthday string to a datetime object
     birthday_date = datetime.strptime(birthday, "%Y.%m.%d").date()
@@ -41,3 +40,18 @@ def is_birthday_today(person: list[dict]) -> bool:
     return (
         birthday_date.day == today_date.day and birthday_date.month == today_date.month
     )
+
+
+def is_new_year(last_reset_date: str) -> bool:
+    today = datetime.now().date()
+    last_reset_year = datetime.strptime(last_reset_date, "%Y-%m-%d").date().year
+    return today.year > last_reset_year
+
+
+def is_auto_mode_on(setting_filepath: str) -> bool:
+    dictionary = load_settings(setting_filepath)
+    result = str(dictionary["auto_mode_on"])
+    if result == "True":
+        return True
+    elif result == "False":
+        return False

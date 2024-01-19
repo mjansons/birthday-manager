@@ -8,17 +8,14 @@ from data_manager import (
     get_todays_celebrators,
     make_list_printable,
     print_person,
-)
-from settings import (
-    settings_mode,
-    create_settings_file,
     check_and_reset_if_new_year,
-    BackFromSettings,
-    is_auto_mode_on,
+    create_settings_file
 )
-from congratulation_manager import congratulation_mode, BackFromCongratulations
-from adding import add_contact, BackFromAdding
-from edit_contacts import view_or_edit, BackFromEdit
+from settings_menu import settings_mode, BackFromSettings
+from data_validators import is_auto_mode_on
+from congratulation_menu import regular_congratulation_mode, BackFromCongratulations
+from adding_menu import add_contact, BackFromAdding
+from edit_menu import view_or_edit, BackFromEdit
 from auto_mode import auto_congratulation_mode
 import sys
 import time
@@ -52,6 +49,7 @@ def user_mode(
                     settings_file,
                 ),
             )
+            auto_thread.daemon = True
             auto_thread.start()
 
         try:
@@ -79,9 +77,7 @@ def user_mode(
                 print("Enter only '1', '2', '3', '4', '5', '6', '7', or '8'")
 
             if answer == "1":
-                congratulation_mode(
-                    contacts_file, history_file, failed_recipients_file, settings_file
-                )
+                regular_congratulation_mode(contacts_file, history_file, failed_recipients_file, settings_file)
             elif answer == "2":
                 add_contact(contacts_file)
             elif answer == "3":
@@ -91,9 +87,7 @@ def user_mode(
             elif answer == "5":
                 display_failed_senders(failed_recipients_file)
             elif answer == "6":
-                settings_mode(
-                    contacts_file, history_file, failed_recipients_file, settings_file
-                )
+                settings_mode(contacts_file, history_file, failed_recipients_file, settings_file)
             elif answer == "7":
                 wipe_all_files(history_file, failed_recipients_file, contacts_file)
             elif answer == "8":
@@ -112,7 +106,7 @@ def wipe_all_files(
     history_filepath: str, failed_senders_filepath: str, contacts: list[dict]
 ):
     while not (
-        answer := input("Are you sure?:\n\n" "1. Yes\n" "2. No\n\n" "Option: ").strip()
+        answer := input("\nAre you sure?:\n" "1. Yes\n" "2. No\n\n" "Option: ").strip()
     ) or answer not in ["1", "2"]:
         print("Enter only '1', '2'")
 

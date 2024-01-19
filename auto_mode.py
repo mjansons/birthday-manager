@@ -1,4 +1,5 @@
 """this file executes automode"""
+
 from data_manager import (
     create_csv,
     append_csv,
@@ -9,6 +10,7 @@ from data_manager import (
     delete_contact,
     append_history_csv,
 )
+from data_validators import is_auto_mode_on
 from ai_manager import MessageMaker
 from email_manager import send_mail
 from ai_manager import WriteManual
@@ -20,10 +22,9 @@ import time
 def auto_congratulation_mode(
     contact_file_path, history_file_path, failed_recipients_path, settings_file_path
 ):
-    """This does the same thing as congratulation manager, except it skips user inputs/ verifications"""
+    """congratulation mode skipping all user inputs/ verifications"""
     # Loading here to Avoid Circular Dependency on settings file
-    from settings import (
-        is_auto_mode_on,
+    from data_manager import (
         check_and_reset_if_new_year,
         load_settings,
         switch_auto_mode,

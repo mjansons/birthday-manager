@@ -8,7 +8,7 @@ from data_manager import (
     edit_contact,
     delete_contact,
 )
-from validators import is_valid_birthday, is_valid_email
+from data_validators import is_valid_birthday, is_valid_email
 import re
 
 
