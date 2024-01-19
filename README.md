@@ -1,4 +1,4 @@
-# Birthday Congratulator
+# Birthday Manager (Python Command Line Program)
 
 This Python project helps you manage and automate birthday congratulations for your contacts.
 
